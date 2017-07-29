@@ -16,7 +16,7 @@
                  <list>
                             <bean class="com.topie.campus.activiti.TopieUserManagerFactory">
                              <property name="userEntityManager"> 
-                                   <bean class="com.topie.campus.activiti.serviceManage.TopieUserEntityManager"/>
+                                   <bean class="com.topie.campus.activiti.serviceManager.TopieUserEntityManager"/>
                                </property>
                             </bean>
                             <!-- <bean class="com.topie.campus.activiti.TopieGroupManagerFactory">

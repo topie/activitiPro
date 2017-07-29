@@ -148,35 +148,7 @@
                         window.open(App.href+"/modeler/create");
                     }
                 }
-            ],
-            search: {
-                rowEleNum: 2,
-                //搜索栏元素
-                items: [
-                    {
-                        type: "select",
-                        label: "角色",
-                        name: "roleId",
-                        items: [
-                            {
-                                text: "请选择角色",
-                                value: ""
-                            }
-                        ],
-                        itemsUrl: App.href + "/api/sys/role/options?topie_token=" + App.token
-                    }, {
-                        type: "text",
-                        label: "登录名(学号或职工号)",
-                        name: "loginName",
-                        placeholder: "输入要搜索的登录名(学号或职工号)"
-                    }, {
-                        type: "text",
-                        label: "昵称",
-                        name: "displayName",
-                        placeholder: "输入要搜索的昵称"
-                    }
-                ]
-            }
+            ]
         };
         grid = window.App.content.find("#moder_grid").topieGrid(options);
     }

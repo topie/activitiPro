@@ -1,4 +1,4 @@
-package com.topie.campus.activiti.serviceManage;
+package com.topie.campus.activiti.serviceManager;
 
 import org.activiti.engine.impl.persistence.entity.GroupEntityManager;
 import org.springframework.beans.factory.annotation.Autowired;

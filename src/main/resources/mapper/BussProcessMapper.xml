@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.topie.campus.activiti.dao.BussProcessMapper" >
+  <resultMap id="BaseResultMap" type="com.topie.campus.activiti.model.BussProcess" >
+    <result column="id" property="id" jdbcType="INTEGER" />
+    <result column="name" property="name" jdbcType="VARCHAR" />
+    <result column="describtion" property="describtion" jdbcType="VARCHAR" />
+    <result column="process_id" property="processId" jdbcType="INTEGER" />
+  </resultMap>
+  <select id="findByPage" resultMap="BaseResultMap">
+        select *
+        from buss_process 
+        limit #{pageOffset},#{pageSize}
+    </select>
+  
+</mapper>

@@ -5,7 +5,7 @@ import org.activiti.engine.impl.interceptor.SessionFactory;
 import org.activiti.engine.impl.persistence.entity.GroupEntityManager;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.topie.campus.activiti.serviceManage.TopieGroupEntityManager;
+import com.topie.campus.activiti.serviceManager.TopieGroupEntityManager;
 
 public class TopieGroupManagerFactory implements SessionFactory
 {

@@ -3,6 +3,7 @@ package com.topie.campus.modeler.api;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -13,12 +14,15 @@ import javax.servlet.http.HttpServletResponse;
 import org.activiti.bpmn.converter.BpmnXMLConverter;
 import org.activiti.bpmn.model.BpmnModel;
 import org.activiti.bpmn.model.FlowElement;
+import org.activiti.bpmn.model.StartEvent;
+import org.activiti.bpmn.model.UserTask;
 import org.activiti.editor.constants.ModelDataJsonConstants;
 import org.activiti.editor.language.json.converter.BpmnJsonConverter;
 import org.activiti.engine.ManagementService;
 import org.activiti.engine.ProcessEngine;
 import org.activiti.engine.ProcessEngines;
 import org.activiti.engine.RepositoryService;
+import org.activiti.engine.impl.history.handler.UserTaskAssignmentHandler;
 import org.activiti.engine.repository.Deployment;
 import org.activiti.engine.repository.Model;
 import org.activiti.engine.repository.ProcessDefinition;
@@ -33,6 +37,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.github.pagehelper.PageInfo;
+import com.topie.campus.common.Option;
 import com.topie.campus.common.SimplePageInfo;
 import com.topie.campus.common.utils.PageConvertUtil;
 import com.topie.campus.common.utils.ResponseUtil;
@@ -61,6 +66,22 @@ public class ModelController {
 	        Long total = repositoryService.createModelQuery().count();
 	        SimplePageInfo<Model> page = new SimplePageInfo<Model>(pageNum,pageSize,total,models);
 	        return ResponseUtil.success(PageConvertUtil.grid(page));
+	    }
+	 
+	 @RequestMapping("/listAll")
+	 @ResponseBody
+	    public List<Option> listAll(org.springframework.ui.Model model) {
+	        List<Model> models = repositoryService.createModelQuery().list();
+	        List<Option> options = new ArrayList<>();
+	        for(Model m :models)
+	        {
+	        	Option o = new Option();
+	        	o.setText(m.getName());
+	        	o.setValue(m.getId());
+	        	options.add(o);
+	        	
+	        }
+	        return options;
 	    }
 	 
 	 @RequestMapping("modeler-open")
@@ -138,7 +159,7 @@ public class ModelController {
 	        String processName = modelData.getName() + ".bpmn20.xml";
 	        Deployment deployment = repositoryService.createDeployment()
 	                .name(modelData.getName())
-	                .addString(processName, new String(bpmnBytes, "UTF-8"))
+	                .addString(processName,new String(bpmnBytes, "UTF-8"))
 	                .deploy();
 	        modelData.setDeploymentId(deployment.getId());
 	        repositoryService.saveModel(modelData);
@@ -147,6 +168,8 @@ public class ModelController {
 	                .createProcessDefinitionQuery()
 	                .deploymentId(deployment.getId()).list();
 
+	        System.out.println(new String(bpmnBytes, "UTF-8"));
+	        
 	        return ResponseUtil.success("发布成功！");
 	    }
 	    
@@ -176,11 +199,11 @@ public class ModelController {
 	    	
 	        BpmnModel model = new BpmnJsonConverter().convertToBpmnModel(modelNode);
 	        
-	    	 Collection<FlowElement> flowElements = model.getMainProcess().getFlowElements();  
-	    	 
+	    	Collection<FlowElement> flowElements = model.getMainProcess().getFlowElements(); 
+	    	
 	    	SimplePageInfo<FlowElement> page = new SimplePageInfo<FlowElement>(pageNum,pageSize,flowElements.size(), new ArrayList<FlowElement>(flowElements));
-	        return ResponseUtil.success(ResponseUtil.success(PageConvertUtil.grid(page)));
+	       
+	    	return ResponseUtil.success(ResponseUtil.success(PageConvertUtil.grid(page)));
 	    }
-	    
 	    
 }

@@ -1,4 +1,4 @@
-package com.topie.campus.activiti.serviceManage;
+package com.topie.campus.activiti.serviceManager;
 
 import java.util.List;
 
