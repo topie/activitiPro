@@ -10,6 +10,7 @@ import org.activiti.bpmn.model.FlowElement;
 import org.activiti.bpmn.model.UserTask;
 import org.activiti.editor.language.json.converter.BpmnJsonConverter;
 import org.activiti.engine.RepositoryService;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -40,7 +41,10 @@ public class BussProcessController {
 	@ResponseBody
 	public Result save(BussProcess bussProcess)
 	{
+		if(bussProcess.getId()==null)
 		bussProcessService.insert(bussProcess);
+		else
+		bussProcessService.updateSelective(bussProcess);
 		return ResponseUtil.success("保存成功！");
 	}	
 	
@@ -75,32 +79,6 @@ public class BussProcessController {
 	{
 		PageInfo<BussProcess> pageInfo =  bussProcessService.findByPage(pageNum,pageSize,bussProcess);
 		return ResponseUtil.success(PageConvertUtil.grid(pageInfo));
-	}	
-	
-	@RequestMapping("/node-conf")
-	@ResponseBody
-	public Result list(String flowElementId,String processId, @RequestParam(value = "pageNum", required = false, defaultValue = "1") int pageNum,
-            @RequestParam(value = "pageSize", required = false, defaultValue = "15") int pageSize,String userId,String type)
-	{
-		byte[] bytes = repositoryService.getModelEditorSource(processId);
-    	
-    	JsonNode modelNode = null;
-		try {
-			modelNode = (JsonNode) new ObjectMapper().readTree(bytes);
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-    	
-        BpmnModel model = new BpmnJsonConverter().convertToBpmnModel(modelNode);
-        
-    	FlowElement f = model.getMainProcess().getFlowElement(flowElementId);
-	    	if(f instanceof UserTask)
-	    	{
-	    		UserTask task = (UserTask)f;
-	    		task.setAssignee(userId);
-	    	}
-		return ResponseUtil.success();
 	}	
 	
 }

@@ -48,6 +48,8 @@ public interface IService<T> {
 
     List<T> selectByExample(Object example);
 
+    int deleteEntity(T entity);
+    
     List<T> selectAll();
 
 }

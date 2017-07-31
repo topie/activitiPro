@@ -37,6 +37,10 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.github.pagehelper.PageInfo;
+import com.topie.campus.activiti.model.BpmNode;
+import com.topie.campus.activiti.model.BussProcess;
+import com.topie.campus.activiti.service.BpmNodeService;
+import com.topie.campus.activiti.service.BussProcessService;
 import com.topie.campus.common.Option;
 import com.topie.campus.common.SimplePageInfo;
 import com.topie.campus.common.utils.PageConvertUtil;
@@ -56,6 +60,12 @@ public class ModelController {
 	  
 	  @Inject
 	  ManagementService managementService;
+	  
+	  @Inject
+	  BussProcessService bussProcessService;
+	  
+	  @Inject
+	  BpmNodeService bpmNodeService;
 	
 	 @RequestMapping("/list")
 	 @ResponseBody
@@ -71,12 +81,15 @@ public class ModelController {
 	 @RequestMapping("/listAll")
 	 @ResponseBody
 	    public List<Option> listAll(org.springframework.ui.Model model) {
-	        List<Model> models = repositoryService.createModelQuery().list();
+	        
+		 List<ProcessDefinition> processDefinitions = repositoryService
+	                .createProcessDefinitionQuery().list();
+		 
 	        List<Option> options = new ArrayList<>();
-	        for(Model m :models)
+	        for(ProcessDefinition m :processDefinitions)
 	        {
 	        	Option o = new Option();
-	        	o.setText(m.getName());
+	        	o.setText(m.getId());
 	        	o.setValue(m.getId());
 	        	options.add(o);
 	        	
@@ -164,10 +177,28 @@ public class ModelController {
 	        modelData.setDeploymentId(deployment.getId());
 	        repositoryService.saveModel(modelData);
 
-	        List<ProcessDefinition> processDefinitions = repositoryService
+	       ProcessDefinition processDefinition = repositoryService
 	                .createProcessDefinitionQuery()
-	                .deploymentId(deployment.getId()).list();
-
+	                .deploymentId(deployment.getId()).singleResult();
+	       
+	       Collection<FlowElement> flowElements = model.getMainProcess().getFlowElements(); 
+	    	for(FlowElement f:flowElements)
+	    	{
+	    		BpmNode node = bpmNodeService.selectByKey(f.getId());
+	    		node.setNodeId(f.getId());
+	    		node.setNodeName(f.getName());
+	    		node.setProcessId(processDefinition.getId());
+	    		node.setNodeType(f.getClass().getSimpleName());
+	    		if(node==null)
+	    		{
+	    		bpmNodeService.insert(node);
+	    		}
+	    		else
+	    		{
+		    	bpmNodeService.updateSelective(node);
+	    		}
+	    	}
+	        
 	        System.out.println(new String(bpmnBytes, "UTF-8"));
 	        
 	        return ResponseUtil.success("发布成功！");
@@ -182,28 +213,41 @@ public class ModelController {
 	    
 	    @RequestMapping("/node-list")
 	    @ResponseBody
-	    public Result getNodeList(@RequestParam("id") String id,
+	    public Result getNodeList(@RequestParam("id") String processId,
 	    		@RequestParam(value = "pageNum", required = false, defaultValue = "1") int pageNum,
 	            @RequestParam(value = "pageSize", required = false, defaultValue = "15") int pageSize) throws JsonProcessingException, IOException {
 	    	
-	    	byte[] bytes = repositoryService
-	                .getModelEditorSource(id);
+	    	ProcessDefinition processDefinition = repositoryService
+	                .createProcessDefinitionQuery().processDefinitionId(processId)
+	               .singleResult();
 	    	
-	    	JsonNode modelNode = null;
-			try {
-				modelNode = (JsonNode) new ObjectMapper().readTree(bytes);
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+	    	BpmNode node = new BpmNode();
+	    	node.setProcessId(processId);
 	    	
-	        BpmnModel model = new BpmnJsonConverter().convertToBpmnModel(modelNode);
-	        
-	    	Collection<FlowElement> flowElements = model.getMainProcess().getFlowElements(); 
+            PageInfo<BpmNode> pageInfo = bpmNodeService.findByPage(pageNum, pageSize,node);
 	    	
-	    	SimplePageInfo<FlowElement> page = new SimplePageInfo<FlowElement>(pageNum,pageSize,flowElements.size(), new ArrayList<FlowElement>(flowElements));
-	       
-	    	return ResponseUtil.success(ResponseUtil.success(PageConvertUtil.grid(page)));
+	    	return ResponseUtil.success(PageConvertUtil.grid(pageInfo));
 	    }
+	    
+	    /*BpmnModel model = repositoryService.getBpmnModel(processId);  
+    	
+    	byte[] bytes = repositoryService
+                .getModelEditorSource(buss.getProcessId());
+    	
+    	JsonNode modelNode = null;
+		try {
+			modelNode = (JsonNode) new ObjectMapper().readTree(bytes);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+    	
+        BpmnModel model = new BpmnJsonConverter().convertToBpmnModel(modelNode);
+        
+    	Collection<FlowElement> flowElements = model.getMainProcess().getFlowElements(); 
+    	
+    	SimplePageInfo<FlowElement> page = new SimplePageInfo<FlowElement>(pageNum,pageSize,flowElements.size(), new ArrayList<FlowElement>(flowElements));
+       
+    	return ResponseUtil.success(PageConvertUtil.grid(page));*/
 	    
 }

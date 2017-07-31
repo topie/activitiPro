@@ -24,6 +24,8 @@
 
 package com.topie.campus.basedao.service.impl;
 
+import com.github.pagehelper.PageInfo;
+import com.topie.campus.activiti.model.BpmNode;
 import com.topie.campus.basedao.service.IService;
 import com.topie.campus.common.SimplePageInfo;
 
@@ -73,10 +75,16 @@ public abstract class BaseService<T> implements IService<T> {
     public List<T> selectByExample(Object example) {
         return mapper.selectByExample(example);
     }
-
+    
+    public int deleteEntity(T entity)
+    {
+    	return mapper.delete(entity);
+    }
+    
     @Override
     public List<T> selectAll() {
         return mapper.selectAll();
     }
+
 
 }

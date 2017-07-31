@@ -87,6 +87,64 @@
             ]
     };
     
+    App.bussProcess.nodeOptions = {
+            url: App.href + "/modeler/node-list",
+            beforeSend: function (request) {
+                request.setRequestHeader("X-Auth-Token", App.token);
+            },
+            pageNum: 1,//当前页码
+            pageSize: 15,//每页显示条数
+            idFiled: "id",//id域指定
+            showCheckbox: true,//是否显示checkbox
+            checkboxWidth: "3%",
+            showIndexNum: true,
+            indexNumWidth: "5%",
+            pageSelect: [2, 15, 30, 50],
+            columns: [{
+                title: "名称",
+                field: "nodeName",
+                sort: true
+            },
+            {
+                title: "类型",
+                field: "nodeType",
+                sort: true
+            }
+            ],
+            actionColumnText: "操作",//操作列文本
+            actionColumnWidth: "35%",
+            actionColumns: [{
+                text: "配置用户",
+                cls: "btn-primary btn-sm",
+                handle: function (index, data) {
+                	modal = $.topieModal({
+                        id: "bussModel",
+                        title: "编辑",
+                        destroy: true
+                    });
+                	 var form = modal.$body.topieForm(App.bussProcess.formItems);
+                     form.loadRemote(App.href + "/bussProcess/load?id=" + data.id);
+                     modal.show();
+                }
+            }],
+            tools: [
+                {
+                    text: " 新建",//按钮文本
+                    cls: "btn btn-primary",//按钮样式
+                    icon: "fa fa-cubes",
+                    handle: function (grid) {
+                    	modal = $.topieModal({
+                            id: "bussModel",
+                            title: "新建",
+                            destroy: true
+                        });
+                    	 var form = modal.$body.topieForm(App.bussProcess.formItems);
+                         modal.show();
+                    }
+                }
+                ]
+        };
+    
     App.bussProcess.initEvents = function () {
         var options = {
             url: App.href + "/bussProcess/list",
@@ -156,7 +214,16 @@
                         }
                     });
                 }
-            }
+            },
+            {
+	           	 text: "配置",
+	             cls: "btn-primary btn-sm",
+	             handle: function (index, data) {
+	            	 $("#bussProcess_grid").html("");	 
+		               App.bussProcess.nodeOptions.url = App.href + "/modeler/node-list?id="+data.processId;
+		               grid = window.App.content.find("#bussProcess_grid").topieGrid(App.bussProcess.nodeOptions); 
+	              }
+              }
             ],
             tools: [
                 {

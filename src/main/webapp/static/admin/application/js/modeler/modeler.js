@@ -121,22 +121,6 @@
 	            		 }
 	            	 })
 	              }
-               },{
-	           	 text: "配置",
-	             cls: "btn-primary btn-sm",
-	             handle: function (index, data) {
-	            	 $.ajax({
-	            		 url:App.href+"/modeler/node-list",
-	            		 beforeSend: function (request) {
-	                            request.setRequestHeader("X-Auth-Token", App.token);
-	                        },
-	            		 data:{id:data.id},
-	            		 success:function(result)
-	            		 {
-	            			 alert(result.message);
-	            		 }
-	            	 })
-	              }
                }
             ],
             tools: [

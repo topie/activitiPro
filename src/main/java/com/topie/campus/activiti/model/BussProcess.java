@@ -1,48 +1,72 @@
 package com.topie.campus.activiti.model;
 
-import javax.persistence.Id;
+import javax.persistence.*;
 
-
+@Table(name = "buss_process")
 public class BussProcess {
     @Id
-	private Integer id;
+    private Integer id;
 
     private String name;
 
     private String describtion;
 
-    private Integer processId;
+    @Column(name = "process_id")
+    private String processId;
 
+    /**
+     * @return id
+     */
     public Integer getId() {
         return id;
     }
 
+    /**
+     * @param id
+     */
     public void setId(Integer id) {
         this.id = id;
     }
 
-    public String getDescribtion() {
-		return describtion;
-	}
-
-	public void setDescribtion(String describtion) {
-		this.describtion = describtion;
-	}
-
-	public String getName() {
+    /**
+     * @return name
+     */
+    public String getName() {
         return name;
     }
 
+    /**
+     * @param name
+     */
     public void setName(String name) {
-        this.name = name == null ? null : name.trim();
+        this.name = name;
     }
 
+    /**
+     * @return describtion
+     */
+    public String getDescribtion() {
+        return describtion;
+    }
 
-    public Integer getProcessId() {
+    /**
+     * @param describtion
+     */
+    public void setDescribtion(String describtion) {
+        this.describtion = describtion;
+    }
+
+    /**
+     * @return process_id
+     */
+    public String getProcessId() {
         return processId;
     }
 
-    public void setProcessId(Integer processId) {
+    /**
+     * @param processId
+     */
+    public void setProcessId(String processId) {
         this.processId = processId;
     }
 }

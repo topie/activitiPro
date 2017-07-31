@@ -44,16 +44,16 @@
                         password="${jdbc_password}">
         </jdbcConnection>
 
-        <javaModelGenerator targetPackage="com.topie.campus.core.model"
+        <javaModelGenerator targetPackage="com.topie.campus.activiti.model"
                             targetProject="${targetBasedir}/src/main/java"/>
 
-        <sqlMapGenerator targetPackage="mapper/core"
+        <sqlMapGenerator targetPackage="mapper"
                          targetProject="${targetBasedir}/src/main/resources"/>
 
-        <javaClientGenerator targetPackage="com.topie.campus.core.dao"
+        <javaClientGenerator targetPackage="com.topie.campus.activiti.dao"
                              targetProject="${targetBasedir}/src/main/java" type="XMLMAPPER"/>
 
-        <table tableName="t_at_me" domainObjectName="AtMe">
+        <table tableName="bpm_node" domainObjectName="BpmNode">
         </table>
     </context>
 </generatorConfiguration>
